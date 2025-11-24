@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Multi-Step Visual Reasoning with VTS-V">
+  <meta name="keywords" content="VTS-V, Visual Reasoning, MLLM">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VADE: Variance-Aware Dynamic Sampling via Online Sample-Level Difficulty Estimation for Multimodal RL</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YOURIDHERE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YOURIDHERE');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.4/dist/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-slider@2.0.4/dist/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/logo.jpg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.4/dist/js/bulma-carousel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bulma-slider@2.0.4/dist/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async 
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+</head>
+
+<body>
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title is-bold">
+              <span style="vertical-align: middle">VADE: Variance-Aware Dynamic Sampling via Online Sample-Level Difficulty Estimation for Multimodal RL</span>
+            </h1>
+            <!-- <h2 class="subtitle is-2 publication-subtitle" style="margin-bottom: 20px;">
+              Visual Tokens Scaling and Verification for Dynamic Visual Reasoning
+            </h2> -->
+
+            <div class="is-size-5 publication-authors">
+                <span class="author-block">
+                    Zengjie Hu<sup>1,2,*</sup>,
+                </span>
+                <span class="author-block">
+                    Qiu Jiantao<sup>2,*,\(^\ddagger\)</sup>,
+                </span>
+                <span class="author-block">
+                    Tianyi Bai<sup>3,*</sup>,
+                </span>
+                <span class="author-block">
+                    Haojin Yang<sup>1</sup>,
+                </span>
+                <br>
+                <span class="author-block">
+                    Binhang Yuan<sup>3</sup>,
+                </span>
+                <span class="author-block">
+                    Qi Jing<sup>1,†</sup>,
+                </span>
+                <span class="author-block">
+                    Conghui He<sup>2,†</sup>,
+                </span>
+                <span class="author-block">
+                    Wentao Zhang<sup>1,†</sup>
+                </span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+                <span class="author-block"><sup>1</sup>Peking University, </span>
+                <span class="author-block"><sup>2</sup>Shanghai AI Lab, </span>
+                <span class="author-block"><sup>3</sup>HKUST, </span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+                <span class="author-block"><sup>*</sup>Equal contribution.</span>
+                <span class="author-block"><sup>\(^\ddagger\)</sup>Project leader.</span>
+                <span class="author-block"><sup>†</sup>Corresponding authors.</span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+                <span class="author-block">wentao.zhang@pku.edu.cn, </span>
+                <span class="author-block">jingqi@pku.edu.cn, </span>
+                <span class="author-block">{qiujiantao, heconghui}@pjlab.org.cn</span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/2506.07235" class="external-link button is-normal isrounded is-dark">
+                    <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                    </span>
+                    <span>arXiv</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="https://github.com/Open-DataFlow/vts-v"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code</span>
+                  </a>
+                </span>
+                <!-- Model Link. -->
+                <span class="link-block">
+                  <a href="https://huggingface.co/collections/vtsvnips2025/vts-v-models-684809ed2b4e53ff1c7cd9b3"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-robot"></i>
+                    </span>
+                    <span>Model</span>
+                  </a>
+                </span>
+                <!-- Dataset Link. -->
+                <span class="link-block">
+                  <a href="https://huggingface.co/collections/vtsvnips2025/vts-v-datasets-6846985dc79bdc4ce6b8d3dc"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-database"></i>
+                    </span>
+                    <span>Dataset</span>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <!-- Abstract. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>Group-based policy optimization methods like GRPO and GSPO have become standard for training multimodal models, leveraging group-wise rollouts and relative advantage estimation. However, they suffer from a critical \({gradient \space vanishing}\) problem when all responses within a group receive identical rewards, causing advantage estimates to collapse and training signals to diminish. Existing attempts to mitigate this issue fall into two paradigms: filtering-based and sampling-based methods. Filtering-based methods first generate rollouts broadly and then retroactively filter out uninformative groups, leading to substantial computational overhead. Sampling-based methods proactively select effective samples before rollout but rely on static criteria or prior dataset knowledge, lacking real-time adaptability. To address these issues, we propose <b>VADE</b>, a <b>V</b>ariance-<b>A</b>ware <b>D</b>ynamic sampling framework via online sample-level difficulty <b>E</b>stimation. Our framework integrates three key components: online sample-level difficulty estimation using Beta distributions, a Thompson sampler that maximizes information gain through the estimated correctness probability, and a two-scale prior decay mechanism that maintains robust estimation under policy evolution. This  three components design enables VADE to dynamically select the most informative samples, thereby amplifying training signals while eliminating extra rollout costs. Extensive experiments on multimodal reasoning benchmarks show that VADE consistently outperforms strong baselines in both performance and sample efficiency, while achieving a dramatic reduction in computational overhead. More importantly, our framework can serves as a plug-and-play component to be seamlessly integrated into existing group-based RL algorithms.</p>
+          </div>
+        </div>
+      </div>
+      <!--/ Abstract. -->
+    </div>
+  </section>
+
+  <section class="hero is-light is-small">
+    <div class="hero-body has-text-centered">
+      <h1 class="title is-1">VADE Framework</h1>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths" style="width: 100%;">
+          <h2 class="title is-3">Method</h2>
+          <div class="content has-text-justified">
+            <div class="content has-text-centered">
+              <img src="./asset/main_framework.png" style="width: 80%;" />
+              <!-- <p style="margin-bottom: 0px; font-size:20px; font-weight: bold;">Overview of the VADE framework.</p> -->
+              <p><b>Overview of the VADE framework.</b> Our method maintains distributions \(\text{Beta}(\alpha_i + 1, \beta_i+ 1)\) for each sample to enable online difficulty estimation. Through Thompson sampling and InfoGain \(\mathcal{I}_i = p_t(1-p_t)^2\) maximization, VADE dynamically selects informative batches for group-wise rollouts. The two-scale prior decay mechanism ensures estimates remain accurate throughout policy evolution.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths" style="width: 100%;">
+          <h2 class="title is-3">Data Construction Pipeline</h2>
+          <div class="content has-text-justified">
+            <div class="content has-text-centered">
+              <img src="./asset/pipeline.png" style="width: 80%;" />
+              <p style="margin-bottom: 0px; font-size:20px; font-weight: bold;">Pipeline for Synthetic Data Generation and Curation in VTS-V</p>
+              <p>Our data construction process consists of three stages: (1) generating multi-step reasoning trajectories with visual tool calls, (2) filtering out incorrect trajectories using an LLM-as-a-judge framework, and (3) creating contrastive (correct vs. incorrect) trajectory pairs for multi-step DPO training.</p>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </section>
+
+  <section class="hero is-light is-small">
+    <div class="hero-body has-text-centered">
+      <h1 class="title is-1">Experimental Results</h1>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths" style="width: 80%;">
+          <h2 class="title is-3">Benchmark Performance</h2>
+          <div class="box m-5">
+            <div class="content has-text-centered">
+              <img src="./asset/benchmark_result.png" alt="benchmark_result" width="100%" />
+              <!-- <p>VTS-V achieves state-of-the-art performance across all 13 BLINK subtasks, outperforming GPT-4o and other strong baselines.</p> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths" style="width: 80%;">
+          <h2 class="title is-3">Training Dynamic</h2>
+          <div class="box m-5">
+            <div class="content has-text-centered">
+              <img src="./asset/training_dynamic_2.png" alt="Training Dynamic" width="100%" />
+              <!-- <p>VTS-V demonstrates strong generalization across V*Bench, MMStar, and MathVista benchmarks.</p> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths" style="width: 80%;">
+          <h2 class="title is-3">Ablation Study</h2>
+          <div class="box m-5">
+            <div class="content has-text-centered">
+              <img src="./asset/ablation_study_result.png" alt="Ablation Study" width="100%" />
+              <!-- <p>VTS-V demonstrates strong generalization across V*Bench, MMStar, and MathVista benchmarks.</p> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- <section class="hero is-light is-small">
+    <div class="hero-body has-text-centered">
+      <h1 class="title is-1">Key Features</h1>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths" style="width: 80%;">
+          <h2 class="title is-3">Dynamic Visual Token Scaling</h2>
+          <div class="box m-5">
+            <div class="content has-text-centered">
+              <img src="static/images/features/token_scaling.png" alt="Token Scaling" width="100%" />
+              <p>VTS-V dynamically scales visual tokens during inference, enabling focused attention on relevant image regions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths" style="width: 80%;">
+          <h2 class="title is-3">Verifier-Guided Reasoning</h2>
+          <div class="box m-5">
+            <div class="content has-text-centered">
+              <img src="static/images/features/verifier.png" alt="Verifier" width="100%" />
+              <p>The verifier, trained via multi-step DPO, ensures reasoning terminates at the optimal step.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> -->
+
+  <section class="hero is-light is-small">
+    <div class="hero-body has-text-centered">
+      <h1 class="title is-1">Citation</h1>
+    </div>
+  </section>
+
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <pre><code>
+        @article{bai2025vtsv,
+          title={Multi-Step Visual Reasoning with Visual Tokens Scaling and Verification},
+          author={Bai, Tianyi and Hu, Zengjie and Sun, Fupeng and Qiu, Jiantao and Jiang, Yizhen and He, Guangxin and Zeng, Bohan and He, Conghui and Yuan, Binhang and Zhang, Wentao},
+          journal={arXiv preprint arXiv:2506.07235},
+          year={2025},
+          url={https://arxiv.org/abs/2506.07235},
+          archivePrefix={arXiv},
+          eprint={2506.07235},
+          primaryClass={cs.CV},
+        }
+      </code></pre>
+    </div>
+  </section>
+
+  <!-- @article{bai2025vtsv,
+    title={Multi-Step Visual Reasoning with Visual Tokens Scaling and Verification},
+    author={Bai, Tianyi and Hu, Zengjie and Sun, Fupeng and Jiantao, Qiu and Jiang, Yizhen and He, Guangxin and Zeng, Bohan and He, Conghui and Yuan, Binhang and Zhang, Wentao},
+    journal={arXiv preprint arXiv:2506.07235},
+    year={2025}
+  } -->
+
+  <footer class="footer">
+    <div class="content has-text-centered">
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p style="text-align: center;">
+            This website is adpated from <a href="https://visual-agent.github.io/">DeepEyes</a>.
+            Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
